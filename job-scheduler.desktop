@@ -53,5 +53,5 @@ Comment[tr]=Arka uç olarak crontab kullanan iş planlama yardımcı programı
 Comment=Job scheduling utility which uses crontab as the backend
 Exec=job-scheduler
 Icon=job-scheduler
-Categories=System;MX-Maintenance
+Categories=System;X-MX-Maintenance
 Type=Application
