@@ -66,7 +66,7 @@ QModelIndex CronModel::index(int row, int column, const QModelIndex &parent) con
 
     if (!parent.isValid()) {
         if (isOneUser()) {
-            if (row < static_cast<int>((*crontabs).at(0)->tCommands.size())) {
+            if (row >= 0 && row < static_cast<int>((*crontabs).at(0)->tCommands.size())) {
                 return createIndex(row, column, (*crontabs).at(0)->tCommands.at(row).get());
             }
         } else {
@@ -77,7 +77,7 @@ QModelIndex CronModel::index(int row, int column, const QModelIndex &parent) con
     } else {
         if (!isOneUser()) {
             auto *cron = getCrontab(parent);
-            if (row < static_cast<int>(cron->tCommands.size())) {
+            if (row >= 0 && row < static_cast<int>(cron->tCommands.size())) {
                 return createIndex(row, column, cron->tCommands.at(row).get());
             }
         }
@@ -328,7 +328,7 @@ bool CronModel::dropMimeData(const QMimeData * /*data*/, Qt::DropAction /*action
 
     emit moveTCommand(raw_ptr);
 
-    return false;
+    return true;
 }
 
 void CronModel::dragTCommand(const QModelIndex &idx)

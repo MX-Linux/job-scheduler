@@ -108,14 +108,27 @@ void MainWindow::changeUser()
 {
     saveCron();
     if (Clib::uId() != 0) {
-        QProcess::startDetached(QStringLiteral("job-scheduler-launcher"), {});
+        if (!QProcess::startDetached(QStringLiteral("job-scheduler-launcher"), {})) {
+            QMessageBox::critical(this, tr("Job Scheduler"), tr("Failed to start job-scheduler-launcher."));
+            return;
+        }
     } else {
         QProcess proc;
         proc.start(QStringLiteral("logname"), {}, QIODevice::ReadOnly);
-        proc.waitForFinished();
+        if (!proc.waitForFinished()) {
+            QMessageBox::critical(this, tr("Job Scheduler"), tr("Failed to determine the login user."));
+            return;
+        }
         QString user = QString::fromUtf8(proc.readAllStandardOutput()).trimmed();
-        QProcess::startDetached(QStringLiteral("runuser"),
-                                {QStringLiteral("-u"), user, QStringLiteral("job-scheduler")});
+        if (user.isEmpty()) {
+            QMessageBox::critical(this, tr("Job Scheduler"), tr("Failed to determine the login user."));
+            return;
+        }
+        if (!QProcess::startDetached(QStringLiteral("runuser"),
+                                     {QStringLiteral("-u"), user, QStringLiteral("job-scheduler")})) {
+            QMessageBox::critical(this, tr("Job Scheduler"), tr("Failed to start job-scheduler as %1.").arg(user));
+            return;
+        }
     }
     QApplication::quit();
 }

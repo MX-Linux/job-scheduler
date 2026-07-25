@@ -12,6 +12,20 @@
 #include "Clib.h"
 #include "Crontab.h"
 
+namespace {
+// Bound how long we'll block the calling (GUI) thread waiting on the
+// external crontab process, rather than the QProcess default of 30s.
+constexpr int kCrontabProcessTimeoutMs = 5000;
+
+void killAndReap(QProcess &p)
+{
+    if (p.state() != QProcess::NotRunning) {
+        p.kill();
+        p.waitForFinished(kCrontabProcessTimeoutMs);
+    }
+}
+} // namespace
+
 Crontab::Crontab(const QString &user)
     : CronType(CronType::CRON),
       cronOwner(user),
@@ -48,13 +62,15 @@ QString Crontab::getCrontab(const QString &user)
             p.start(QStringLiteral("crontab"), QStringList() << QStringLiteral("-u") << user << QStringLiteral("-l"));
         }
 
-        if (!p.waitForStarted()) {
+        if (!p.waitForStarted(kCrontabProcessTimeoutMs)) {
             estr = "can't get crontab\n\nQProcess::waitForStarted():" + QString::number(p.error());
+            killAndReap(p);
             return ret;
         }
 
-        if (!p.waitForFinished()) {
+        if (!p.waitForFinished(kCrontabProcessTimeoutMs)) {
             estr = "can't read crontab\n\nQProcess::waitForFinished():" + QString::number(p.error());
+            killAndReap(p);
             return ret;
         }
 
@@ -94,17 +110,33 @@ bool Crontab::putCrontab(const QString &text)
 {
     estr = QLatin1String("");
     if (isSystemCron(cronOwner)) {
-        QString tmpName = cronOwner == QLatin1String("/etc/crontab")
-                              ? QStringLiteral("etccron")
-                              : QStringLiteral("cron_d_") + QFileInfo(cronOwner).fileName();
-        writeTempFile(text, tmpName);
-        QFile f(cronOwner);
-        if (!f.open(QIODevice::WriteOnly)) {
-            estr = QStringLiteral("can't open %1 for write\n\n%2").arg(cronOwner, f.errorString());
+        // Write to a temp file in the same directory (so the final rename is
+        // an atomic same-filesystem replace) instead of truncating the live
+        // file in place, which could leave it empty/partial on interruption.
+        QFileInfo targetInfo(cronOwner);
+        QTemporaryFile tmp(targetInfo.absolutePath() + "/." + targetInfo.fileName() + ".XXXXXX");
+        tmp.setAutoRemove(false);
+        if (!tmp.open()) {
+            estr = QStringLiteral("can't open temporary file for %1\n\n%2").arg(cronOwner, tmp.errorString());
             return false;
         }
-        QTextStream t(&f);
-        t << text;
+        QString tmpFileName = tmp.fileName();
+        {
+            QTextStream t(&tmp);
+            t << text;
+        }
+        tmp.close();
+
+        const QFile::Permissions perms
+            = targetInfo.exists() ? QFile(cronOwner).permissions()
+                                  : QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther;
+        QFile::setPermissions(tmpFileName, perms);
+
+        if (!QFile::rename(tmpFileName, cronOwner)) {
+            estr = QStringLiteral("can't replace %1\n\n%2").arg(cronOwner, QFile(tmpFileName).errorString());
+            QFile::remove(tmpFileName);
+            return false;
+        }
     } else {
         QString fname = writeTempFile(text, cronOwner);
         if (fname.isEmpty()) {
@@ -118,13 +150,15 @@ bool Crontab::putCrontab(const QString &text)
             p.start(QStringLiteral("crontab"), QStringList() << fname);
         }
 
-        if (!p.waitForStarted()) {
+        if (!p.waitForStarted(kCrontabProcessTimeoutMs)) {
             estr = "can't update crontab\n\nQProcess::waitForStarted():" + QString::number(p.error());
+            killAndReap(p);
             return false;
         }
 
-        if (!p.waitForFinished()) {
+        if (!p.waitForFinished(kCrontabProcessTimeoutMs)) {
             estr = "can't update crontab\n\nQProcess::waitForFinished():" + QString::number(p.error());
+            killAndReap(p);
             return false;
         }
 
