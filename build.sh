@@ -134,7 +134,7 @@ if [ "$ARCH_BUILD" = true ]; then
     rm -rf pkg
 
     echo "Arch Linux package build completed!"
-    echo "Package: $(ls *.pkg.tar.zst 2>/dev/null || echo 'not found')"
+    echo "Package: $(ls "$PKG_DEST_DIR"/*.pkg.tar.zst 2>/dev/null || echo 'not found')"
     echo "Binary available at: build/job-scheduler"
     exit 0
 fi

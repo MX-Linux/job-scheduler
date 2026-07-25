@@ -38,3 +38,6 @@ Makefile*
 
 # Exclude binary
 job-scheduler
+
+# Release output, not source
+/debs/

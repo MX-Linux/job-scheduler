@@ -22,6 +22,15 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+# Option to use clang for testing builds. Must be resolved before project()
+# since compiler selection is fixed at that point.
+option(USE_CLANG "Use clang compiler" OFF)
+if(USE_CLANG)
+    set(CMAKE_C_COMPILER clang)
+    set(CMAKE_CXX_COMPILER clang++)
+    message(STATUS "Using clang compiler")
+endif()
+
 set(PROJECT_VERSION_FROM_CHANGELOG "")
 
 if(DEFINED PROJECT_VERSION_OVERRIDE AND NOT "${PROJECT_VERSION_OVERRIDE}" STREQUAL "")
@@ -77,15 +86,6 @@ if(CMAKE_GENERATOR STREQUAL "Ninja")
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         add_compile_options(-fcolor-diagnostics)
     endif()
-endif()
-
-# Option to use clang for testing builds
-option(USE_CLANG "Use clang compiler" OFF)
-if(USE_CLANG)
-    set(CMAKE_C_COMPILER clang)
-    set(CMAKE_CXX_COMPILER clang++)
-    set(CMAKE_CXX_COMPILER_ID "Clang")
-    message(STATUS "Using clang compiler")
 endif()
 
 # Find Qt6 components
