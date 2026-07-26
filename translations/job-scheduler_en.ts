@@ -99,9 +99,9 @@
         <location filename="../src/MainWindow.cpp" line="124"/>
         <location filename="../src/MainWindow.cpp" line="129"/>
         <location filename="../src/MainWindow.cpp" line="207"/>
-        <location filename="../src/MainWindow.cpp" line="267"/>
-        <location filename="../src/MainWindow.cpp" line="288"/>
-        <location filename="../src/MainWindow.cpp" line="357"/>
+        <location filename="../src/MainWindow.cpp" line="270"/>
+        <location filename="../src/MainWindow.cpp" line="291"/>
+        <location filename="../src/MainWindow.cpp" line="360"/>
         <source>Job Scheduler</source>
         <translation type="unfinished"></translation>
     </message>
@@ -248,49 +248,49 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="268"/>
+        <location filename="../src/MainWindow.cpp" line="271"/>
         <source>Not saved since last change.
 Are you OK to reload?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="357"/>
+        <location filename="../src/MainWindow.cpp" line="360"/>
         <source>Not saved since last change.
 Are you OK to exit?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="370"/>
+        <location filename="../src/MainWindow.cpp" line="373"/>
         <source>About Job Scheduler</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="371"/>
+        <location filename="../src/MainWindow.cpp" line="374"/>
         <source>&lt;b&gt;Job Scheduler&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="371"/>
+        <location filename="../src/MainWindow.cpp" line="374"/>
         <source>Version: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="372"/>
+        <location filename="../src/MainWindow.cpp" line="375"/>
         <source>Job Scheduler is based upon qroneko 0.5.4, released in 2005 by korewaisai (&lt;a href=&quot;mailto:korewaisai@yahoo.co.jp&quot;&gt;korewaisai@yahoo.co.jp&lt;/a&gt;)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="375"/>
+        <location filename="../src/MainWindow.cpp" line="378"/>
         <source>Original project page: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="379"/>
+        <location filename="../src/MainWindow.cpp" line="382"/>
         <source>MX project page: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="384"/>
+        <location filename="../src/MainWindow.cpp" line="387"/>
         <source>%1 License</source>
         <translation type="unfinished"></translation>
     </message>
@@ -356,52 +356,57 @@ Are you OK to exit?</source>
 <context>
     <name>TCommandEdit</name>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="43"/>
+        <location filename="../src/TCommandEdit.cpp" line="52"/>
         <source>User:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="51"/>
+        <location filename="../src/TCommandEdit.cpp" line="60"/>
         <source>Time:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="55"/>
+        <location filename="../src/TCommandEdit.cpp" line="64"/>
         <source>Time String E&amp;ditor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="60"/>
+        <location filename="../src/TCommandEdit.cpp" line="69"/>
         <source>Command:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="66"/>
+        <location filename="../src/TCommandEdit.cpp" line="76"/>
         <source>Comment:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="69"/>
+        <location filename="../src/TCommandEdit.cpp" line="79"/>
         <source>Job Schedule:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="132"/>
+        <location filename="../src/TCommandEdit.cpp" line="178"/>
+        <source>Warning: &quot;%1&quot; was not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/TCommandEdit.cpp" line="187"/>
         <source>Time Format Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="146"/>
+        <location filename="../src/TCommandEdit.cpp" line="201"/>
         <source>No matching schedule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="155"/>
+        <location filename="../src/TCommandEdit.cpp" line="210"/>
         <source>Today</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TCommandEdit.cpp" line="157"/>
+        <location filename="../src/TCommandEdit.cpp" line="212"/>
         <source>Tomorrow</source>
         <translation type="unfinished"></translation>
     </message>
@@ -487,52 +492,52 @@ Are you OK to exit?</source>
 <context>
     <name>VariableEdit</name>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="50"/>
+        <location filename="../src/VariableEdit.cpp" line="49"/>
         <source>Variables</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="55"/>
+        <location filename="../src/VariableEdit.cpp" line="54"/>
         <source>Mail:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="56"/>
+        <location filename="../src/VariableEdit.cpp" line="55"/>
         <source>Don&apos;t send</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="57"/>
+        <location filename="../src/VariableEdit.cpp" line="56"/>
         <source>Send</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="58"/>
+        <location filename="../src/VariableEdit.cpp" line="57"/>
         <source>To</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="70"/>
+        <location filename="../src/VariableEdit.cpp" line="69"/>
         <source>&amp;New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="73"/>
+        <location filename="../src/VariableEdit.cpp" line="72"/>
         <source>&amp;Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="81"/>
+        <location filename="../src/VariableEdit.cpp" line="80"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="86"/>
+        <location filename="../src/VariableEdit.cpp" line="85"/>
         <source>Value:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/VariableEdit.cpp" line="89"/>
+        <location filename="../src/VariableEdit.cpp" line="88"/>
         <source>Comment:</source>
         <translation type="unfinished"></translation>
     </message>
