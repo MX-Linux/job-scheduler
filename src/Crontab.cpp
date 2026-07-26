@@ -125,12 +125,14 @@ bool Crontab::putCrontab(const QString &text)
             return false;
         }
         QString tmpFileName = tmp.fileName();
+        QTextStream::Status streamStatus = QTextStream::Ok;
         {
             QTextStream t(&tmp);
             t << text;
             t.flush();
+            streamStatus = t.status();
         }
-        const bool writeOk = tmp.flush() && tmp.error() == QFile::NoError;
+        const bool writeOk = streamStatus == QTextStream::Ok && tmp.flush() && tmp.error() == QFile::NoError;
         tmp.close();
         if (!writeOk) {
             estr = QStringLiteral("can't write temporary file for %1\n\n%2").arg(cronOwner, tmp.errorString());

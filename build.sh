@@ -139,7 +139,7 @@ if [ "$ARCH_BUILD" = true ]; then
     ARCH_BUILDDIR=$(mktemp -d -p "$PWD" archpkgbuild.XXXXXX)
     trap 'rm -rf "$ARCH_BUILDDIR"' EXIT
 
-    rm -rf pkg *.pkg.tar.zst
+    rm -rf pkg *.pkg.tar.*
 
     PKG_DEST_DIR="$PWD/build"
     mkdir -p "$PKG_DEST_DIR"
@@ -150,8 +150,17 @@ if [ "$ARCH_BUILD" = true ]; then
     rm -rf pkg
 
     echo "Arch Linux package build completed!"
-    echo "Package: $(ls "$PKG_DEST_DIR"/*.pkg.tar.zst 2>/dev/null || echo 'not found')"
-    echo "Binary available at: build/job-scheduler"
+    # The actual package extension depends on the host's makepkg.conf PKGEXT
+    # (e.g. .pkg.tar.zst vs .pkg.tar.gz), so ask makepkg for the real name(s)
+    # instead of guessing one. Compilation happens in the temporary BUILDDIR,
+    # not the repo's build/ directory, so no raw binary is left there either.
+    PACKAGE_LIST=$(BUILDDIR="$ARCH_BUILDDIR" PKGDEST="$PKG_DEST_DIR" makepkg --packagelist 2>/dev/null)
+    if [ -n "$PACKAGE_LIST" ]; then
+        echo "Package(s):"
+        echo "$PACKAGE_LIST"
+    else
+        echo "Package: not found"
+    fi
     exit 0
 fi
 
