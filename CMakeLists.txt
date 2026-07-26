@@ -224,3 +224,10 @@ set_target_properties(job-scheduler PROPERTIES
 install(TARGETS job-scheduler
     RUNTIME DESTINATION bin
 )
+
+# Unit tests (CronTime parsing, CronModel operations)
+option(BUILD_TESTING "Build unit tests" ON)
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

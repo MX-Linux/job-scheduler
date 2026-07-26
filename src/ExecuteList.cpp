@@ -93,10 +93,10 @@ void ExecuteList::dataChanged()
                     cmnd << cc.get();
                     date << next;
                 } else {
-                    executes.push_back(std::make_unique<Execute>(cc.get(), QStringLiteral("No matching schedule"), -1));
+                    executes.push_back(std::make_unique<Execute>(cc.get(), tr("No matching schedule"), -1));
                 }
             } else {
-                executes.push_back(std::make_unique<Execute>(cc.get(), QStringLiteral("Time Format Error"), -1));
+                executes.push_back(std::make_unique<Execute>(cc.get(), tr("Time Format Error"), -1));
             }
         }
     }
