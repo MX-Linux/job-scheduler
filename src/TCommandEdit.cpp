@@ -14,6 +14,9 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QProcess>
+#include <QRegularExpression>
+#include <QStandardPaths>
 #include <QTextEdit>
 #include <QVBoxLayout>
 #include <QtGui>
@@ -27,6 +30,12 @@
 #include <chrono>
 
 using namespace std::chrono_literals;
+
+namespace {
+// Bound how long we'll wait on the "command -v" child process before giving
+// up and failing open (no warning), rather than risking the UI hanging.
+constexpr int kCommandCheckTimeoutMs = 2000;
+}
 
 TCommandEdit::TCommandEdit(QWidget *parent)
     : QWidget(parent)
@@ -62,6 +71,7 @@ TCommandEdit::TCommandEdit(QWidget *parent)
         {
             h->addWidget((commandEdit = new QLineEdit(this)));
         }
+        mainLayout->addWidget((commandWarningLabel = new QLabel(QLatin1String(""), this)));
         mainLayout->addSpacing(5);
         mainLayout->addWidget(new QLabel(tr("Comment:"), this));
         mainLayout->addWidget((commentEdit = new QTextEdit(this)));
@@ -82,6 +92,11 @@ TCommandEdit::TCommandEdit(QWidget *parent)
     userCombo->addItems(Clib::allUsers());
     userCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     userLabel->hide();
+
+    QPalette warnPal = commandWarningLabel->palette();
+    warnPal.setColor(QPalette::WindowText, QColor(189, 55, 44));
+    commandWarningLabel->setPalette(warnPal);
+    commandWarningLabel->hide();
 
     commentEdit->setAutoFormatting(QTextEdit::AutoNone);
 
@@ -120,8 +135,48 @@ void TCommandEdit::changeCurrent(Crontab *cron, TCommand *cmnd)
         commandEdit->setCursorPosition(0);
         commentEdit->setPlainText(tCommand->getComment());
         setExecuteList(tCommand->getTime());
+        updateCommandWarning(tCommand->getCommand());
     }
     viewChanging = false;
+}
+
+bool TCommandEdit::isCommandAvailable(const QString &exe)
+{
+    if (!QStandardPaths::findExecutable(exe).isEmpty()) {
+        return true;
+    }
+
+    // Not a standalone executable - cron runs commands via `sh -c`, so it may
+    // still be a shell builtin (cd, echo, ".", ":", ...) or function, which
+    // findExecutable() can't see. Ask the shell itself via "command -v",
+    // passed as an argument (not interpolated) to avoid any shell injection.
+    QProcess proc;
+    proc.start(QStringLiteral("sh"), {QStringLiteral("-c"), QStringLiteral("command -v \"$1\" >/dev/null 2>&1"),
+                                      QStringLiteral("sh"), exe});
+    if (!proc.waitForStarted(kCommandCheckTimeoutMs)) {
+        return true; // fail open: can't check, so don't warn
+    }
+    if (!proc.waitForFinished(kCommandCheckTimeoutMs)) {
+        proc.kill();
+        proc.waitForFinished(kCommandCheckTimeoutMs);
+        return true; // fail open
+    }
+    return proc.exitStatus() == QProcess::NormalExit && proc.exitCode() == 0;
+}
+
+void TCommandEdit::updateCommandWarning(const QString &command)
+{
+    // Heuristic only: takes the first whitespace-separated token as the
+    // command. Shell constructs like pipes and env-var prefixes ("FOO=bar
+    // cmd") aren't parsed, so this can still flag commands that are actually
+    // fine - it's a hint, not validation.
+    const QString exe = command.section(QRegularExpression(QStringLiteral("\\s+")), 0, 0);
+    if (exe.isEmpty() || isCommandAvailable(exe)) {
+        commandWarningLabel->hide();
+        return;
+    }
+    commandWarningLabel->setText(tr("Warning: \"%1\" was not found").arg(exe));
+    commandWarningLabel->show();
 }
 
 void TCommandEdit::setExecuteList(const QString &time)
@@ -163,6 +218,7 @@ void TCommandEdit::setExecuteList(const QString &time)
 void TCommandEdit::commandEdited(const QString &str)
 {
     tCommand->setCommand(str);
+    updateCommandWarning(str);
     emit dataChanged();
 }
 
