@@ -139,6 +139,13 @@ if [ "$ARCH_BUILD" = true ]; then
     exit 0
 fi
 
+# CMAKE_C_COMPILER/CMAKE_CXX_COMPILER are cached at first configure and don't
+# change on reconfigure even if USE_CLANG flips, so a --clang build must use
+# its own build directory rather than reconfiguring "build" in place.
+if [ "$USE_CLANG" = true ]; then
+    BUILD_DIR="build-clang"
+fi
+
 # Clean build directory if requested
 if [ "$CLEAN" = true ]; then
     echo "Cleaning build directory and debian artifacts..."
@@ -164,6 +171,10 @@ CMAKE_ARGS=(
 if [ "$USE_CLANG" = true ]; then
     CMAKE_ARGS+=(-DUSE_CLANG=ON)
     echo "Using clang compiler"
+else
+    # Explicitly pass OFF so a plain build doesn't inherit a cached ON from
+    # a previous --clang build in the same build directory.
+    CMAKE_ARGS+=(-DUSE_CLANG=OFF)
 fi
 
 cmake "${CMAKE_ARGS[@]}"

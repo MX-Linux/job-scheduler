@@ -9,6 +9,10 @@
 */
 #include <QtCore>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
 #include "Clib.h"
 #include "Crontab.h"
 
@@ -132,8 +136,14 @@ bool Crontab::putCrontab(const QString &text)
                                   : QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther;
         QFile::setPermissions(tmpFileName, perms);
 
-        if (!QFile::rename(tmpFileName, cronOwner)) {
-            estr = QStringLiteral("can't replace %1\n\n%2").arg(cronOwner, QFile(tmpFileName).errorString());
+        // QFile::rename() refuses to overwrite an existing destination, which
+        // /etc/crontab and /etc/cron.d/* entries always are. Use the POSIX
+        // rename(2) syscall directly, which atomically replaces the
+        // destination on the same filesystem.
+        const QByteArray tmpPath = QFile::encodeName(tmpFileName);
+        const QByteArray targetPath = QFile::encodeName(cronOwner);
+        if (::rename(tmpPath.constData(), targetPath.constData()) != 0) {
+            estr = QStringLiteral("can't replace %1\n\n%2").arg(cronOwner, QString::fromLocal8Bit(strerror(errno)));
             QFile::remove(tmpFileName);
             return false;
         }
