@@ -118,7 +118,23 @@ if [ "$ARCH_BUILD" = true ]; then
         echo "Error: could not parse version from debian/changelog."
         exit 1
     fi
-    echo "Using version ${ARCH_VERSION} from debian/changelog"
+
+    # PKGBUILD builds from the downloaded, checksummed source tarball for
+    # pkgver, not the local checkout, so pkgver can't be overridden via a
+    # PKGVER environment variable (makepkg doesn't read one). Instead, fail
+    # loudly if PKGBUILD's pinned pkgver has drifted from debian/changelog,
+    # rather than silently packaging the wrong version.
+    PKGBUILD_VERSION=$(sed -n 's/^pkgver=//p' PKGBUILD)
+    if [ -z "$PKGBUILD_VERSION" ]; then
+        echo "Error: could not parse pkgver from PKGBUILD."
+        exit 1
+    fi
+    if [ "$PKGBUILD_VERSION" != "$ARCH_VERSION" ]; then
+        echo "Error: PKGBUILD pkgver ($PKGBUILD_VERSION) does not match debian/changelog version ($ARCH_VERSION)."
+        echo "Update PKGBUILD's pkgver/source/sha256sums to match the current release before packaging."
+        exit 1
+    fi
+    echo "Using version ${ARCH_VERSION} (matches debian/changelog and PKGBUILD)"
 
     ARCH_BUILDDIR=$(mktemp -d -p "$PWD" archpkgbuild.XXXXXX)
     trap 'rm -rf "$ARCH_BUILDDIR"' EXIT
@@ -128,7 +144,7 @@ if [ "$ARCH_BUILD" = true ]; then
     PKG_DEST_DIR="$PWD/build"
     mkdir -p "$PKG_DEST_DIR"
 
-    BUILDDIR="$ARCH_BUILDDIR" PKGDEST="$PKG_DEST_DIR" PKGVER="$ARCH_VERSION" makepkg -f
+    BUILDDIR="$ARCH_BUILDDIR" PKGDEST="$PKG_DEST_DIR" makepkg -f
 
     echo "Cleaning makepkg artifacts..."
     rm -rf pkg

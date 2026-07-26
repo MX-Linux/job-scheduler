@@ -12,7 +12,7 @@ source=("https://github.com/MX-Linux/job-scheduler/archive/refs/tags/26.06.1.tar
 sha256sums=('123777a734f4ede96127dae2a593127062aa55957267c908f6d112de2c63a7c0')
 
 build() {
-    cd "${startdir}"
+    cd "${srcdir}/${pkgname}-${pkgver}"
 
     rm -rf build
 
@@ -27,7 +27,7 @@ build() {
 }
 
 package() {
-    cd "${startdir}"
+    cd "${srcdir}/${pkgname}-${pkgver}"
 
     install -Dm755 build/job-scheduler "${pkgdir}/usr/bin/job-scheduler"
 

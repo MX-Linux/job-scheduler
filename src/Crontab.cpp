@@ -128,13 +128,24 @@ bool Crontab::putCrontab(const QString &text)
         {
             QTextStream t(&tmp);
             t << text;
+            t.flush();
         }
+        const bool writeOk = tmp.flush() && tmp.error() == QFile::NoError;
         tmp.close();
+        if (!writeOk) {
+            estr = QStringLiteral("can't write temporary file for %1\n\n%2").arg(cronOwner, tmp.errorString());
+            QFile::remove(tmpFileName);
+            return false;
+        }
 
         const QFile::Permissions perms
             = targetInfo.exists() ? QFile(cronOwner).permissions()
                                   : QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther;
-        QFile::setPermissions(tmpFileName, perms);
+        if (!QFile::setPermissions(tmpFileName, perms)) {
+            estr = QStringLiteral("can't set permissions on temporary file for %1").arg(cronOwner);
+            QFile::remove(tmpFileName);
+            return false;
+        }
 
         // QFile::rename() refuses to overwrite an existing destination, which
         // /etc/crontab and /etc/cron.d/* entries always are. Use the POSIX
