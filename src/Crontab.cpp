@@ -194,7 +194,7 @@ bool Crontab::putCrontab(const QString &text)
     return true;
 }
 
-QString Crontab::cronText()
+QString Crontab::cronText() const
 {
     QString ret;
 

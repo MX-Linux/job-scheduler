@@ -85,7 +85,7 @@ public:
     void setup(const QString &str);
     QString writeTempFile(const QString &text, const QString &tmp);
     static QString list2String(const QStringList &list);
-    QString cronText();
+    QString cronText() const;
 
     static bool isSystemCron(const QString &owner)
     {

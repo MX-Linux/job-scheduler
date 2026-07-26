@@ -31,8 +31,8 @@ public:
     {
         setColumnHidden(1, flag);
     }
-    Crontab *getCurrentCrontab();
-    TCommand *getCurrentTCommand();
+    Crontab *getCurrentCrontab() const;
+    TCommand *getCurrentTCommand() const;
 
 protected:
     void startDrag(Qt::DropActions supportedActions) override;
@@ -48,7 +48,7 @@ public slots:
 
 private slots:
     void insertTCommand(TCommand *cmnd);
-    void TCommandMoved(TCommand *cmnd);
+    void tCommandMoved(TCommand *cmnd);
     void selectChanged(const QModelIndex &cur, const QModelIndex &prev);
 
 signals:

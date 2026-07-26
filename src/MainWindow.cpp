@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(quitAction, &QAction::triggered, this, &MainWindow::close);
     connect(saveAction, &QAction::triggered, this, &MainWindow::saveCron);
     connect(reloadAction, &QAction::triggered, this, &MainWindow::reloadCron);
-    connect(aboutAction, &QAction::triggered, this, &MainWindow::AboutJobScheduler);
+    connect(aboutAction, &QAction::triggered, this, &MainWindow::aboutJobScheduler);
     connect(helpAction, &QAction::triggered, this, &MainWindow::displayHelp);
     connect(cronView, &CronView::pasted, pasteAction, &QAction::setEnabled);
     connect(chuserAction, &QAction::triggered, this, &MainWindow::changeUser);
@@ -364,7 +364,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-void MainWindow::AboutJobScheduler()
+void MainWindow::aboutJobScheduler()
 {
     hide();
     displayAboutMsgBox(tr("About Job Scheduler"),

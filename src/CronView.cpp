@@ -40,7 +40,7 @@ CronView::CronView(CronModel *model, QWidget *parent)
     setAcceptDrops(true);
 
     connect(selectionModel(), &QItemSelectionModel::currentChanged, this, &CronView::selectChanged);
-    connect(cronModel, &CronModel::moveTCommand, this, &CronView::TCommandMoved);
+    connect(cronModel, &CronModel::moveTCommand, this, &CronView::tCommandMoved);
 }
 
 CronView::~CronView() = default;
@@ -164,18 +164,18 @@ void CronView::changeCurrent(TCommand *cmnd)
         }
     }
 }
-void CronView::TCommandMoved(TCommand *cmnd)
+void CronView::tCommandMoved(TCommand *cmnd)
 {
     changeCurrent(cmnd);
     emit dataChanged();
 }
 
-Crontab *CronView::getCurrentCrontab()
+Crontab *CronView::getCurrentCrontab() const
 {
     return cronModel->getCrontab(currentIndex());
 }
 
-TCommand *CronView::getCurrentTCommand()
+TCommand *CronView::getCurrentTCommand() const
 {
     return cronModel->getTCommand(currentIndex());
 }
