@@ -261,7 +261,11 @@ void Crontab::setup(const QString &str)
                 }
                 head << cmnt;
                 cmnt.clear();
-            } else {
+            } else if (!cmnt.isEmpty()) {
+                // Only preserve a blank line once a comment block has actually
+                // started; otherwise a bare section-separator blank line (e.g.
+                // between the variables block and the next command) would be
+                // misread as a leading blank line of that command's comment.
                 cmnt << s;
             }
         } else if (s.at(0) == '#') {
