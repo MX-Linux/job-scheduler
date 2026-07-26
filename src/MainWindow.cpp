@@ -213,11 +213,14 @@ void MainWindow::initCron()
 
     QString user = Clib::uName();
     auto cron = std::make_unique<Crontab>(user);
-    if (cron->tCommands.empty() && cron->comment.isEmpty() && cron->variables.empty()) {
-        cron->comment = QLatin1String("");
-        cron->variables.push_back(std::make_unique<Variable>(QStringLiteral("HOME"), Clib::uHome(), QStringLiteral("Home")));
-        cron->variables.push_back(std::make_unique<Variable>(QStringLiteral("PATH"), Clib::getEnv("PATH"), QStringLiteral("Path")));
-        cron->variables.push_back(std::make_unique<Variable>(QStringLiteral("SHELL"), Clib::uShell(), QStringLiteral("Shell")));
+    if (cron->getTCommands().empty() && cron->getComment().isEmpty() && cron->getVariables().empty()) {
+        cron->setComment(QLatin1String(""));
+        cron->getVariables().push_back(
+            std::make_unique<Variable>(QStringLiteral("HOME"), Clib::uHome(), QStringLiteral("Home")));
+        cron->getVariables().push_back(
+            std::make_unique<Variable>(QStringLiteral("PATH"), Clib::getEnv("PATH"), QStringLiteral("Path")));
+        cron->getVariables().push_back(
+            std::make_unique<Variable>(QStringLiteral("SHELL"), Clib::uShell(), QStringLiteral("Shell")));
     }
     crontabs.push_back(std::move(cron));
     if (Clib::uId() == 0) {
@@ -233,9 +236,9 @@ void MainWindow::initCron()
             }
             auto cronFile = std::make_unique<Crontab>(QStringLiteral("/etc/cron.d/") + cf);
             if (!cronFile->estr.isEmpty()) {
-                qWarning().noquote() << "Failed to load" << cronFile->cronOwner << ":" << cronFile->estr;
+                qWarning().noquote() << "Failed to load" << cronFile->getCronOwner() << ":" << cronFile->estr;
             }
-            if (!cronFile->tCommands.empty() || !cronFile->variables.empty()) {
+            if (!cronFile->getTCommands().empty() || !cronFile->getVariables().empty()) {
                 crontabs.push_back(std::move(cronFile));
             }
         }
@@ -246,7 +249,7 @@ void MainWindow::initCron()
             }
 
             auto userCron = std::make_unique<Crontab>(s);
-            if (!userCron->tCommands.empty()) {
+            if (!userCron->getTCommands().empty()) {
                 crontabs.push_back(std::move(userCron));
             }
         }
@@ -280,15 +283,15 @@ void MainWindow::saveCron()
 
     for (size_t i = 0; i < crontabs.size(); ++i) {
         auto &cron = crontabs[i];
-        if (cron->changed) {
-            SaveDialog dialog(cron->cronOwner, cron->cronText());
+        if (cron->isChanged()) {
+            SaveDialog dialog(cron->getCronOwner(), cron->cronText());
             if (dialog.exec() == QDialog::Accepted) {
                 bool ret = cron->putCrontab(dialog.getText());
                 if (!ret) {
                     QMessageBox::critical(this, tr("Job Scheduler"), cron->estr);
                     notSaved = true;
                 } else {
-                    crontabs[i] = std::make_unique<Crontab>(cron->cronOwner);
+                    crontabs[i] = std::make_unique<Crontab>(cron->getCronOwner());
                     saved = true;
                 }
             } else {
@@ -307,7 +310,7 @@ void MainWindow::saveCron()
 void MainWindow::dataChanged()
 {
     auto *cron = cronView->getCurrentCrontab();
-    cron->changed = true;
+    cron->setChanged(true);
     saveAction->setEnabled(true);
     cronView->resizeColumnToContents(0);
 }
@@ -348,7 +351,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     bool changed = false;
     for (const auto &cron : crontabs) {
-        if (cron->changed) {
+        if (cron->isChanged()) {
             changed = true;
             break;
         }

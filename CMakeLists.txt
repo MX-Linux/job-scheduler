@@ -114,6 +114,7 @@ set(SOURCES
     src/ExecuteModel.cpp
     src/ExecuteView.cpp
     src/SaveDialog.cpp
+    src/ScrollableTreeView.cpp
     src/TCommandEdit.cpp
     src/TimeDialog.cpp
     src/VariableEdit.cpp
@@ -135,6 +136,7 @@ set(HEADERS
     src/ExecuteModel.h
     src/ExecuteView.h
     src/SaveDialog.h
+    src/ScrollableTreeView.h
     src/TCommandEdit.h
     src/TimeDialog.h
     src/VariableEdit.h

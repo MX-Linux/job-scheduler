@@ -11,9 +11,9 @@ namespace {
 
 TCommand *addCommand(Crontab &crontab, const QString &time, const QString &command)
 {
-    auto cmnd = std::make_unique<TCommand>(time, crontab.cronOwner, command, QString(), &crontab);
+    auto cmnd = std::make_unique<TCommand>(time, crontab.getCronOwner(), command, QString(), &crontab);
     TCommand *raw = cmnd.get();
-    crontab.tCommands.push_back(std::move(cmnd));
+    crontab.getTCommands().push_back(std::move(cmnd));
     return raw;
 }
 

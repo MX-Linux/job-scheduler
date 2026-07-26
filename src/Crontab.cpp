@@ -206,23 +206,25 @@ QString Crontab::cronText() const
     }
 
     for (const auto &v : std::as_const(variables)) {
-        if (!v->comment.isEmpty()) {
-            ret += QStringLiteral("# %1\n").arg(v->comment.replace('\n', QLatin1String("\n# ")));
+        if (!v->getComment().isEmpty()) {
+            QString c = v->getComment();
+            ret += QStringLiteral("# %1\n").arg(c.replace('\n', QLatin1String("\n# ")));
         }
 
-        ret += QStringLiteral("%1=%2\n").arg(v->name, v->value);
+        ret += QStringLiteral("%1=%2\n").arg(v->getName(), v->getValue());
     }
 
     ret += QLatin1String("\n");
     for (const auto &c : std::as_const(tCommands)) {
-        if (!c->comment.isEmpty()) {
-            ret += QStringLiteral("# %1\n").arg(c->comment.replace('\n', QLatin1String("\n# ")));
+        if (!c->getComment().isEmpty()) {
+            QString cmt = c->getComment();
+            ret += QStringLiteral("# %1\n").arg(cmt.replace('\n', QLatin1String("\n# ")));
         }
 
         if (isSystemCron(cronOwner)) {
-            ret += QStringLiteral("%1 %2 %3\n").arg(c->time, c->user, c->command);
+            ret += QStringLiteral("%1 %2 %3\n").arg(c->getTime(), c->getUser(), c->getCommand());
         } else {
-            ret += QStringLiteral("%1 %2\n").arg(c->time, c->command);
+            ret += QStringLiteral("%1 %2\n").arg(c->getTime(), c->getCommand());
         }
     }
 

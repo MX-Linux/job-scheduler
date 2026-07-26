@@ -10,15 +10,14 @@
 #pragma once
 
 #include "Crontab.h"
+#include "ScrollableTreeView.h"
 
 #include <memory>
-
-#include <QTreeView>
 
 class QPaintEvent;
 class CronModel;
 
-class CronView : public QTreeView
+class CronView : public ScrollableTreeView
 {
     Q_OBJECT
 
@@ -57,8 +56,6 @@ signals:
     void dataChanged();
 
 private:
-    void scrollTo(const QModelIndex &idx, ScrollHint hint) override;
-
     std::unique_ptr<TCommand> pasteData;
     CronModel *cronModel;
 };

@@ -105,21 +105,21 @@ void TCommandEdit::changeCurrent(Crontab *cron, TCommand *cmnd)
     } else {
         setEnabled(true);
         timer.start(1min);
-        timeEdit->setText(tCommand->time);
+        timeEdit->setText(tCommand->getTime());
         timeEdit->setCursorPosition(0);
-        if (cron->cronOwner == QLatin1String("/etc/crontab")) {
-            userCombo->setCurrentIndex(userCombo->findText(tCommand->user));
+        if (cron->getCronOwner() == QLatin1String("/etc/crontab")) {
+            userCombo->setCurrentIndex(userCombo->findText(tCommand->getUser()));
             userCombo->show();
             userLabel->hide();
         } else {
-            userLabel->setText("  " + cron->cronOwner + "  ");
+            userLabel->setText("  " + cron->getCronOwner() + "  ");
             userCombo->hide();
             userLabel->show();
         }
-        commandEdit->setText(tCommand->command);
+        commandEdit->setText(tCommand->getCommand());
         commandEdit->setCursorPosition(0);
-        commentEdit->setPlainText(tCommand->comment);
-        setExecuteList(tCommand->time);
+        commentEdit->setPlainText(tCommand->getComment());
+        setExecuteList(tCommand->getTime());
     }
     viewChanging = false;
 }
@@ -162,13 +162,13 @@ void TCommandEdit::setExecuteList(const QString &time)
 
 void TCommandEdit::commandEdited(const QString &str)
 {
-    tCommand->command = str;
+    tCommand->setCommand(str);
     emit dataChanged();
 }
 
 void TCommandEdit::timeEdited(const QString &str)
 {
-    tCommand->time = str;
+    tCommand->setTime(str);
     emit dataChanged();
     setExecuteList(str);
 }
@@ -176,7 +176,7 @@ void TCommandEdit::timeEdited(const QString &str)
 void TCommandEdit::commentEdited()
 {
     if (!viewChanging) {
-        tCommand->comment = commentEdit->toPlainText();
+        tCommand->setComment(commentEdit->toPlainText());
         emit dataChanged();
     }
 }
@@ -184,7 +184,7 @@ void TCommandEdit::commentEdited()
 void TCommandEdit::userChanged(int index)
 {
 
-    tCommand->user = userCombo->itemText(index);
+    tCommand->setUser(userCombo->itemText(index));
     emit dataChanged();
 }
 
@@ -205,7 +205,7 @@ void TCommandEdit::doTimeDialog()
         if (timeEdit->text() != s) {
             timeEdit->setText(s);
             setExecuteList(s);
-            tCommand->time = s;
+            tCommand->setTime(s);
             emit dataChanged();
         }
     }
