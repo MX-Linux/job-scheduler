@@ -18,6 +18,13 @@
 
 int main(int argc, char *argv[])
 {
+    if (qEnvironmentVariableIsEmpty("DISPLAY") && qEnvironmentVariableIsEmpty("WAYLAND_DISPLAY")
+        && qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM")) {
+        qWarning("job-scheduler: no display available (DISPLAY and WAYLAND_DISPLAY are both unset); "
+                "a graphical session is required to run this program.");
+        return EXIT_FAILURE;
+    }
+
     Q_INIT_RESOURCE(application);
 
     if (getuid() == 0) {
